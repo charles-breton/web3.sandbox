@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as BABYLON from '@babylonjs/core';
 import BabylonScene from '../BabylonScene'; // import the component above linking to file we just created.
+import { Vector3 } from '@babylonjs/core';
 
 
 const ybotURL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/ybot.babylon';
@@ -25,12 +26,12 @@ var jumpAnim = null;
 var animationBlend = 0.005;
 var mouseSensitivity = 0.005;
 var cameraSpeed = 0.0075;
-var walkSpeed = 0.008;
+var walkSpeed = 0.04;
 var runSpeed = 0.05;
 var sprintSpeed = 0.008;
 // var jumpSpeed = 0.0005;
 var jumpHeight = 8;
-var gravity = new BABYLON.Vector3(0, -0.250, 0);
+var gravity = new BABYLON.Vector3(0, -0.200, 0);
 
 //in-game changed variables
 var speed = 0;
@@ -41,7 +42,7 @@ var mouseMin = -35, mouseMax = 45;
 
 // instances of box
 
-var instanceBox = 2000;
+var instanceBox = 10;
 
 
 
@@ -642,11 +643,16 @@ export default class Viewer extends Component {
                 baseColors.push(new BABYLON.Color4(Math.random(), Math.random(), Math.random(), Math.random()));
                 instance.instancedBuffers.color = baseColors[baseColors.length - 1].clone();
                 instance.checkCollisions = true;
+
+
+
+
+
                 // instance.setEnabled(false);
 
-                var startPosition = new BABYLON.Vector3(instance.position.x, instance.position.y, instance.position.z);
-                var endPosition = new BABYLON.Vector3(instance.position.x + Math.random(), instance.position.y + Math.random(), instance.position.z + Math.random());
-                BABYLON.Animation.CreateAndStartAnimation("anim", box, "position", 30, 100, startPosition, endPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                // var startPosition = new BABYLON.Vector3(instance.position.x, instance.position.y, instance.position.z);
+                // var endPosition = new BABYLON.Vector3(instance.position.x + Math.random(), instance.position.y + Math.random(), instance.position.z + Math.random());
+                // BABYLON.Animation.CreateAndStartAnimation("anim", box, "position", 30, 100, startPosition, endPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
             }
 
@@ -654,10 +660,64 @@ export default class Viewer extends Component {
             const sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
             // Move the sphere upward 1/2 its height
             sphere.position.y = 1;
+
+
+            BABYLON.SceneLoader.LoadAssetContainer("https://models.babylonjs.com/", "seagulf.glb", scene, function (container) {
+                // Add loaded file to the scene
+                console.log(container)
+                container.addAllToScene();
+
+                // Scale and position the loaded model (First mesh loaded from gltf is the root node)
+                container.meshes[0].scaling.scaleInPlace(0.002)
+                container.position = new Vector3(2, 0, 2);
+                // wrap in bounding box mesh to avoid picking perf hit
+                var gltfMesh = container.meshes[0]
+                var boundingBox = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(gltfMesh)
+
+
+                // Create bounding box gizmo
+                // var utilLayer = new BABYLON.UtilityLayerRenderer(scene)
+                // utilLayer.utilityLayerScene.autoClearDepthAndStencil = false;
+                // var gizmo = new BABYLON.BoundingBoxGizmo(BABYLON.Color3.FromHexString("#0984e3"), utilLayer)
+                // gizmo.attachedMesh = boundingBox;
+
+                // // Create behaviors to drag and scale with pointers in VR
+                var sixDofDragBehavior = new BABYLON.SixDofDragBehavior()
+                boundingBox.addBehavior(sixDofDragBehavior)
+                var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
+                boundingBox.addBehavior(multiPointerScaleBehavior)
+            });
+
+
+            // var boundingBox = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(sphere)
+
+            // var sixDofDragBehavior = new BABYLON.SixDofDragBehavior()
+            // boundingBox.addBehavior(sixDofDragBehavior)
+            // var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
+            // boundingBox.addBehavior(multiPointerScaleBehavior)
+
+
             // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
             const ground = null;
 
+            canvas.addEventListener("click", function (event) {
+                if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
+                    return;
+                }
 
+                event.preventDefault();
+
+                var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                // alert("Klick")
+                console.log(pickResult.pickedMesh)
+                console.log(pickResult.subMeshFaceId)
+            });
+
+
+
+            let reticule = addCrosshair(scene, camera)
+
+            let startButton = StartButton();
             engine.runRenderLoop(() => {
                 if (scene) {
                     scene.render();
@@ -672,3 +732,127 @@ export default class Viewer extends Component {
     }
 }
 
+function StartButton() {
+
+    var startDiv = document.getElementById("startDiv");
+
+    if (startDiv) {
+        startDiv.parentNode.removeChild(startDiv);
+    }
+
+    startDiv = document.createElement("div");
+
+    startDiv.style.width = "100%";
+    startDiv.style.height = "100%";
+    // startDiv.style.textAlign = "center";
+    // startDiv.style.verticalAlign = "middle";
+
+
+
+    startDiv.id = "startDiv";
+    startDiv.style.position = "absolute";
+    startDiv.style.top = "50%";
+    startDiv.style.left = "40%";
+
+
+
+    var startDivDot = document.createElement("span");
+
+    startDivDot.className = "EnterGame";
+
+    startDiv.appendChild(startDivDot);
+
+    var startDivText = document.createElement("span");
+
+    startDivText.textContent = "PRESS SPACEBAR";
+    startDivText.style.fontFamily = "monospace";
+    startDivText.style.color = "white";
+    startDivText.style.fontSize = "50px"
+    // startDivText.style.position.x = "50%"
+
+
+    startDiv.appendChild(startDivText);
+    document.body.appendChild(startDiv);
+
+
+
+    window.addEventListener("keydown", (input) => {
+        startDiv.style.visibility = "hidden";
+    });
+
+    return startDiv;
+}
+
+function addCrosshair(scene, camera) {
+
+    let w = 128
+
+    let texture = new BABYLON.DynamicTexture('reticule', w, scene, false)
+    texture.hasAlpha = true
+
+    let ctx = texture.getContext()
+    let reticule
+
+    const createOutline = () => {
+        let c = 1
+
+
+        // ctx.moveTo(c, w * 0.25)
+        // ctx.lineTo(c, c)
+        // ctx.lineTo(w * 0.25, c)
+
+        // ctx.moveTo(w * 0.75, c)
+        // ctx.lineTo(w - c, c)
+        // ctx.lineTo(w - c, w * 0.25)
+
+        // ctx.moveTo(w - c, w * 0.75)
+        // ctx.lineTo(w - c, w - c)
+        // ctx.lineTo(w * 0.75, w - c)
+
+        // ctx.moveTo(w * 0.25, w - c)
+        // ctx.lineTo(c, w - c)
+        // ctx.lineTo(c, w * 0.75)
+
+        ctx.lineWidth = 1.5
+        ctx.strokeStyle = 'rgba(128, 128, 128, 0.5)'
+        ctx.stroke()
+    }
+
+    const createNavigate = () => {
+        ctx.fillStyle = 'transparent'
+        ctx.clearRect(0, 0, w, w)
+        createOutline()
+
+        ctx.strokeStyle = 'rgba(48, 48, 48, 5.9)'
+        ctx.lineWidth = 3.5
+        ctx.moveTo(w * 0.5, w * 0.25)
+        ctx.lineTo(w * 0.5, w * 0.75)
+
+        ctx.moveTo(w * 0.25, w * 0.5)
+        ctx.lineTo(w * 0.75, w * 0.5)
+        ctx.stroke()
+        ctx.beginPath()
+
+        texture.update()
+    }
+
+    createNavigate()
+
+    let material = new BABYLON.StandardMaterial('reticule', scene)
+    material.diffuseTexture = texture
+    material.opacityTexture = texture
+    material.emissiveColor.set(1, 1, 1)
+    material.disableLighting = true
+
+    let plane = BABYLON.MeshBuilder.CreatePlane('reticule', { size: 0.04 }, scene)
+    plane.material = material
+    plane.position.set(0, 0, 1.1)
+    plane.isPickable = false
+    plane.rotation.z = Math.PI / 4
+
+    reticule = plane
+    reticule.parent = camera
+
+    return reticule
+
+} 
