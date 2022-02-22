@@ -540,7 +540,7 @@ export default class Viewer extends Component {
                 "pipeline", true, scene, [camera]
             );
             pipeline.samples = 4;
-            var ssao = new BABYLON.SSAORenderingPipeline('ssaopipeline', scene, { ssaoRatio: 0.99, combineRatio: 1 }, [camera]);
+            // var ssao = new BABYLON.SSAORenderingPipeline('ssaopipeline', scene, { ssaoRatio: 0.99, combineRatio: 1 }, [camera]);
             // var postProcess = new BABYLON.PostProcess("anamorphic effects", "anamorphicEffects", [], null, 1, camera);
 
 
