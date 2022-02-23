@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as GUI from '@babylonjs/gui';
 import * as BABYLON from '@babylonjs/core';
 import BabylonScene from '../BabylonScene'; // import the component above linking to file we just created.
 import { Vector3 } from '@babylonjs/core';
@@ -24,9 +25,9 @@ var jumpAnim = null;
 
 //variables
 var animationBlend = 0.005;
-var mouseSensitivity = 0.005;
-var cameraSpeed = 0.0075;
-var walkSpeed = 0.04;
+var mouseSensitivity = 0.003;
+var cameraSpeed = 0.0035;
+var walkSpeed = 0.005;
 var runSpeed = 0.05;
 var sprintSpeed = 0.008;
 // var jumpSpeed = 0.0005;
@@ -38,11 +39,11 @@ var speed = 0;
 var vsp = 0;
 var jumped = false;
 var mouseX = 0, mouseY = 0;
-var mouseMin = -35, mouseMax = 45;
+var mouseMin = -35, mouseMax = 100;
 
 // instances of box
 
-var instanceBox = 10;
+var instanceBox = 50;
 
 
 
@@ -56,7 +57,7 @@ export default class Viewer extends Component {
             // SETUP CAMERA
 
             // FREE CAMERA (NON MESH)
-            var camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3.Zero(), scene);
+            var camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 0, 10), scene);
             camera.inputs.clear();
             camera.minZ = 0;
 
@@ -76,6 +77,9 @@ export default class Viewer extends Component {
             shadowGenerator.usePercentageCloserFiltering = true;
 
 
+            // Initialize GizmoManager
+            var gizmoManager = new BABYLON.GizmoManager(scene)
+            gizmoManager.boundingBoxGizmoEnabled = true
 
             // ENV BUILDER SETTINGS 
             var helper = scene.createDefaultEnvironment({
@@ -105,7 +109,7 @@ export default class Viewer extends Component {
 
             // INITIAL INPUTS CONTROL
             const dsm = new BABYLON.DeviceSourceManager(engine);
-            var deltaTime = 10;
+            var deltaTime = 5;
 
             // CHARACTER COMPONENTS
             var main = new BABYLON.Mesh("parent", scene);
@@ -267,6 +271,7 @@ export default class Viewer extends Component {
                                 keyboard.getInput(68), //D
                                 keyboard.getInput(32), //Space
                                 keyboard.getInput(16), //Shift
+                                mouse.getInput(1) // Left Click to interact
                             );
                         } else {
                             thirdPersonMovement(
@@ -383,7 +388,7 @@ export default class Viewer extends Component {
 
 
             // FIRST PERSON MOVEMENT
-            function firstPersonMovement(up, down, left, right, jump, run) {
+            function firstPersonMovement(up, down, left, right, jump, run, leftclick) {
                 var directionZ = up - down;
                 var directionX = right - left;
 
@@ -528,8 +533,7 @@ export default class Viewer extends Component {
 
 
             setupPointerLock();
-            scene.detachControl();
-
+            // scene.detachControl();
 
             helper.ground.checkCollisions = true;
             helper.skybox.checkCollisions = true;
@@ -565,7 +569,7 @@ export default class Viewer extends Component {
                 if (startingPoint) { // we need to disconnect camera from canvas
                     setTimeout(function () {
                         camera.detachControl(canvas);
-                    }, 0);
+                    }, 100);
                 }
             }
 
@@ -616,12 +620,12 @@ export default class Viewer extends Component {
 
             var box = BABYLON.MeshBuilder.CreateBox("box", { size: 15 }, scene);
             box.position = new BABYLON.Vector3(8, 1, 18);
-            // box.material = redMat;
+
             addToMirror(box);
             addShadows(box);
             box.material = new BABYLON.StandardMaterial("lightBox", scene);
 
-            box.alwaysSelectAsActiveMesh = true;
+            // box.alwaysSelectAsActiveMesh = true;
 
             let instanceCount = instanceBox;
 
@@ -631,6 +635,8 @@ export default class Viewer extends Component {
             let baseColors = [];
             let alphas = [];
 
+            let boxInstances = [];
+
             for (var index = 0; index < instanceCount - 1; index++) {
                 let instance = box.createInstance("box" + index);
                 instance.position.x = 250 - Math.random() * 500;
@@ -639,14 +645,14 @@ export default class Viewer extends Component {
                 instance.alwaysSelectAsActiveMesh = true;
 
 
-                alphas.push(Math.random());
+                // alphas.push(Math.random());
                 baseColors.push(new BABYLON.Color4(Math.random(), Math.random(), Math.random(), Math.random()));
                 instance.instancedBuffers.color = baseColors[baseColors.length - 1].clone();
                 instance.checkCollisions = true;
 
 
 
-
+                boxInstances.push(instance);
 
                 // instance.setEnabled(false);
 
@@ -656,49 +662,67 @@ export default class Viewer extends Component {
 
             }
 
+            gizmoManager.attachableMeshes = boxInstances;
+
+            // Create simple meshes
+            var spheres = []
+            for (var i = 0; i < 5; i++) {
+                var sphereTest = BABYLON.Mesh.CreateIcoSphere("sphere", { radius: 0.2, flat: true, subdivisions: 1 }, scene);
+                sphereTest.scaling.x = 2
+                sphereTest.position.y = 1;
+                sphereTest.material = new BABYLON.StandardMaterial("sphere material", scene)
+                sphereTest.position.z = i + 5
+                spheres.push(sphereTest)
+            }
+
+            // Restrict gizmos to only spheres
+            gizmoManager.attachableMeshes = spheres
+            // Toggle gizmos with keyboard buttons
+            document.onkeydown = (e) => {
+                if (e.key == 'y') {
+                    console.log("WORKING")
+                    gizmoManager.positionGizmoEnabled = !gizmoManager.positionGizmoEnabled
+                }
+                if (e.key == 'u') {
+                    gizmoManager.rotationGizmoEnabled = !gizmoManager.rotationGizmoEnabled
+                }
+                if (e.key == 'h') {
+                    gizmoManager.scaleGizmoEnabled = !gizmoManager.scaleGizmoEnabled
+                }
+                if (e.key == 'j') {
+                    gizmoManager.boundingBoxGizmoEnabled = !gizmoManager.boundingBoxGizmoEnabled
+                }
+            }
+
+
+
+
+
 
             const sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
             // Move the sphere upward 1/2 its height
             sphere.position.y = 1;
+            sphere.checkCollisions = true;
+
+            var boundingBox = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(sphere)
+
+            var utilLayer = new BABYLON.UtilityLayerRenderer(scene)
+            utilLayer.utilityLayerScene.autoClearDepthAndStencil = false;
+            var gizmo = new BABYLON.BoundingBoxGizmo(BABYLON.Color3.FromHexString("#0984e3"), utilLayer)
+            gizmo.attachedMesh = boundingBox;
+
+            var sixDofDragBehavior = new BABYLON.PointerDragBehavior()
+            boundingBox.addBehavior(sixDofDragBehavior)
+            var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
+            boundingBox.addBehavior(multiPointerScaleBehavior)
 
 
-            BABYLON.SceneLoader.LoadAssetContainer("https://models.babylonjs.com/", "seagulf.glb", scene, function (container) {
-                // Add loaded file to the scene
-                console.log(container)
-                container.addAllToScene();
 
-                // Scale and position the loaded model (First mesh loaded from gltf is the root node)
-                container.meshes[0].scaling.scaleInPlace(0.002)
-                container.position = new Vector3(2, 0, 2);
-                // wrap in bounding box mesh to avoid picking perf hit
-                var gltfMesh = container.meshes[0]
-                var boundingBox = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(gltfMesh)
-
-
-                // Create bounding box gizmo
-                // var utilLayer = new BABYLON.UtilityLayerRenderer(scene)
-                // utilLayer.utilityLayerScene.autoClearDepthAndStencil = false;
-                // var gizmo = new BABYLON.BoundingBoxGizmo(BABYLON.Color3.FromHexString("#0984e3"), utilLayer)
-                // gizmo.attachedMesh = boundingBox;
-
-                // // Create behaviors to drag and scale with pointers in VR
-                var sixDofDragBehavior = new BABYLON.SixDofDragBehavior()
-                boundingBox.addBehavior(sixDofDragBehavior)
-                var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
-                boundingBox.addBehavior(multiPointerScaleBehavior)
-            });
-
-
-            // var boundingBox = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(sphere)
-
-            // var sixDofDragBehavior = new BABYLON.SixDofDragBehavior()
-            // boundingBox.addBehavior(sixDofDragBehavior)
-            // var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
-            // boundingBox.addBehavior(multiPointerScaleBehavior)
 
 
             // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
             const ground = null;
+
 
             canvas.addEventListener("click", function (event) {
                 if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
@@ -710,7 +734,7 @@ export default class Viewer extends Component {
                 var pickResult = scene.pick(scene.pointerX, scene.pointerY);
                 // alert("Klick")
                 console.log(pickResult.pickedMesh)
-                console.log(pickResult.subMeshFaceId)
+                console.log(pickResult.pickedMesh.name)
             });
 
 
@@ -718,8 +742,17 @@ export default class Viewer extends Component {
             let reticule = addCrosshair(scene, camera)
 
             let startButton = StartButton();
+            // let FPSCounter = FpsCounter();
+
+
+
             engine.runRenderLoop(() => {
+                scene.debugLayer.show({
+                    embedMode: true,
+                });
+
                 if (scene) {
+
                     scene.render();
                 }
             });
@@ -731,6 +764,18 @@ export default class Viewer extends Component {
         );
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 function StartButton() {
 
@@ -778,9 +823,63 @@ function StartButton() {
 
     window.addEventListener("keydown", (input) => {
         startDiv.style.visibility = "hidden";
+        startDiv.remove();
     });
 
     return startDiv;
+}
+
+
+function FpsCounter() {
+
+    var fpsDiv = document.getElementById("fpsDiv");
+
+    if (fpsDiv) {
+        fpsDiv.parentNode.removeChild(fpsDiv);
+    }
+
+    fpsDiv = document.createElement("div");
+
+    fpsDiv.style.width = "100%";
+    fpsDiv.style.height = "100%";
+    // startDiv.style.textAlign = "center";
+    // startDiv.style.verticalAlign = "middle";
+
+
+
+    fpsDiv.id = "fpsDiv";
+    fpsDiv.style.position = "absolute";
+    fpsDiv.style.top = "0";
+    fpsDiv.style.left = "0";
+
+
+
+    var fpsDivDot = document.createElement("span");
+
+    fpsDivDot.className = "fpscounter";
+
+    fpsDiv.appendChild(fpsDivDot);
+
+    var fpsDivText = document.createElement("span");
+
+    fpsDivText.textContent = "FPS: ";
+    fpsDivText.style.fontFamily = "monospace";
+    fpsDivText.style.color = "red";
+    fpsDivText.style.fontSize = "20px"
+    // startDivText.style.position.x = "50%"
+
+
+    fpsDiv.appendChild(fpsDivText);
+    document.body.appendChild(fpsDiv);
+
+
+
+    window.addEventListener("keydown", (input) => {
+        // startDiv.style.visibility = "hidden";
+        // startDiv.remove();
+    });
+
+    return fpsDiv;
 }
 
 function addCrosshair(scene, camera) {
@@ -853,6 +952,7 @@ function addCrosshair(scene, camera) {
     reticule = plane
     reticule.parent = camera
 
+    // return null
     return reticule
 
 } 
