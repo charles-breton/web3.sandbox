@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import * as GUI from '@babylonjs/gui';
 import * as BABYLON from '@babylonjs/core';
 import BabylonScene from '../BabylonScene'; // import the component above linking to file we just created.
 import { Vector3 } from '@babylonjs/core';
+import "@babylonjs/loaders/glTF";
+import "@babylonjs/gui";
 
 
 const ybotURL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/ybot.babylon';
 // const m4URL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/m4a1.obj';
+const testing = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BrainStem/glTF-Embedded/';
 
 
 var firstPerson = true;
@@ -251,6 +253,27 @@ export default class Viewer extends Component {
 
                 engine.hideLoadingUI();
             }, function (evt) { });
+
+
+
+            // BABYLON.SceneLoader.ImportMesh(testing, "BrainStem.gltf", scene, function (meshes) {
+            //     scene.createDefaultCameraOrLight(true, true, true);
+            //     scene.createDefaultEnvironment();
+
+            // });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             // SETUP KEYBINDS BEFORE SCENE LOADS
@@ -618,7 +641,7 @@ export default class Viewer extends Component {
                 }
             });
 
-            var box = BABYLON.MeshBuilder.CreateBox("box", { size: 15 }, scene);
+            var box = BABYLON.MeshBuilder.CreateBox("box", { size: 30 }, scene);
             box.position = new BABYLON.Vector3(8, 1, 18);
 
             addToMirror(box);
@@ -695,7 +718,10 @@ export default class Viewer extends Component {
             }
 
 
+            // Append glTF model to scene.
+            BABYLON.SceneLoader.Append("scenes/BoomBox/", "BoomBox.gltf", scene, function (scene) {
 
+            });
 
 
 
@@ -786,9 +812,12 @@ function StartButton() {
     }
 
     startDiv = document.createElement("div");
-
+    startDiv.style.display = "flex";
     startDiv.style.width = "100%";
     startDiv.style.height = "100%";
+    startDiv.style.backgroundColor = "grey";
+    startDiv.style.alignItems = "center"
+    startDiv.style.justifyContent = "center"
     // startDiv.style.textAlign = "center";
     // startDiv.style.verticalAlign = "middle";
 
@@ -796,9 +825,11 @@ function StartButton() {
 
     startDiv.id = "startDiv";
     startDiv.style.position = "absolute";
-    startDiv.style.top = "50%";
-    startDiv.style.left = "40%";
+    startDiv.style.top = "0";
+    startDiv.style.left = "0";
 
+
+    startDiv.style.pointerEvents = "none"
 
 
     var startDivDot = document.createElement("span");
@@ -810,9 +841,14 @@ function StartButton() {
     var startDivText = document.createElement("span");
 
     startDivText.textContent = "PRESS SPACEBAR";
+
+
+    startDivText.style.left = "0";
     startDivText.style.fontFamily = "monospace";
     startDivText.style.color = "white";
     startDivText.style.fontSize = "50px"
+
+
     // startDivText.style.position.x = "50%"
 
 
