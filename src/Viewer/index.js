@@ -55,13 +55,15 @@ export default class Viewer extends Component {
         this.onSceneMount = (e) => {
             const { canvas, scene, engine } = e;
 
-
             // SETUP CAMERA
 
             // FREE CAMERA (NON MESH)
             var camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 0, 10), scene);
             camera.inputs.clear();
             camera.minZ = 0;
+
+
+            // var lighting = new SetupLighthing(scene);
 
 
             // HEMLIGHT SETTINGS
@@ -90,11 +92,12 @@ export default class Viewer extends Component {
                 groundMirrorFallOffDistance: 0,
                 groundSize: 500,
                 skyboxSize: 500,
+                isPickable: false,
             });
 
             helper.setMainColor(scene.clearColor);
             helper.groundMaterial.diffuseTexture = null;
-            helper.groundMaterial.alpha = 1;
+            helper.groundMaterial.alpha = 0;
             helper.groundMaterial.fogEnabled = true;
 
             // ADD SHAWDOWS TO CHARACTER
@@ -205,10 +208,10 @@ export default class Viewer extends Component {
 
 
                 // SETUP MATERIAL/TEXTURE/ANIMATION FOR CHARACTER MODEL
-                body.material = new BABYLON.StandardMaterial("character", scene);
-                joints.material = new BABYLON.StandardMaterial("joints", scene);
-                body.material.diffuseColor = new BABYLON.Color3(0.81, 0.24, 0.24);
-                joints.material.emissiveColor = new BABYLON.Color3(0.19, 0.29, 0.44);
+                // body.material = new BABYLON.StandardMaterial("character", scene);
+                // joints.material = new BABYLON.StandardMaterial("joints", scene);
+                // body.material.diffuseColor = new BABYLON.Color3(0.81, 0.24, 0.24);
+                // joints.material.emissiveColor = new BABYLON.Color3(0.19, 0.29, 0.44);
 
 
                 addToMirror(character);
@@ -685,62 +688,63 @@ export default class Viewer extends Component {
 
             }
 
-            gizmoManager.attachableMeshes = boxInstances;
+            // gizmoManager.attachableMeshes = boxInstances;
 
             // Create simple meshes
-            var spheres = []
-            for (var i = 0; i < 5; i++) {
-                var sphereTest = BABYLON.Mesh.CreateIcoSphere("sphere", { radius: 0.2, flat: true, subdivisions: 1 }, scene);
-                sphereTest.scaling.x = 2
-                sphereTest.position.y = 1;
-                sphereTest.material = new BABYLON.StandardMaterial("sphere material", scene)
-                sphereTest.position.z = i + 5
-                spheres.push(sphereTest)
-            }
+            // var spheres = []
+            // for (var i = 0; i < 5; i++) {
+            //     var sphereTest = BABYLON.Mesh.CreateIcoSphere("sphere", { radius: 0.2, flat: true, subdivisions: 1 }, scene);
+            //     sphereTest.scaling.x = 2
+            //     sphereTest.position.y = 1;
+            //     sphereTest.material = new BABYLON.StandardMaterial("sphere material", scene)
+            //     sphereTest.position.z = i + 5
+            //     spheres.push(sphereTest)
+            // }
 
             // Restrict gizmos to only spheres
-            gizmoManager.attachableMeshes = spheres
+            // gizmoManager.attachableMeshes = spheres
+
             // Toggle gizmos with keyboard buttons
-            document.onkeydown = (e) => {
-                if (e.key == 'y') {
-                    console.log("WORKING")
-                    gizmoManager.positionGizmoEnabled = !gizmoManager.positionGizmoEnabled
-                }
-                if (e.key == 'u') {
-                    gizmoManager.rotationGizmoEnabled = !gizmoManager.rotationGizmoEnabled
-                }
-                if (e.key == 'h') {
-                    gizmoManager.scaleGizmoEnabled = !gizmoManager.scaleGizmoEnabled
-                }
-                if (e.key == 'j') {
-                    gizmoManager.boundingBoxGizmoEnabled = !gizmoManager.boundingBoxGizmoEnabled
-                }
-            }
+            // document.onkeydown = (e) => {
+            //     if (e.key == 'y') {
+            //         console.log("WORKING")
+            //         gizmoManager.positionGizmoEnabled = !gizmoManager.positionGizmoEnabled
+            //     }
+            //     if (e.key == 'u') {
+            //         gizmoManager.rotationGizmoEnabled = !gizmoManager.rotationGizmoEnabled
+            //     }
+            //     if (e.key == 'h') {
+            //         gizmoManager.scaleGizmoEnabled = !gizmoManager.scaleGizmoEnabled
+            //     }
+            //     if (e.key == 'j') {
+            //         gizmoManager.boundingBoxGizmoEnabled = !gizmoManager.boundingBoxGizmoEnabled
+            //     }
+            // }
 
 
             // Append glTF model to scene.
-            BABYLON.SceneLoader.Append("scenes/BoomBox/", "BoomBox.gltf", scene, function (scene) {
+            // BABYLON.SceneLoader.Append("scenes/BoomBox/", "BoomBox.gltf", scene, function (scene) {
 
-            });
+            // });
 
 
 
-            const sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
-            // Move the sphere upward 1/2 its height
-            sphere.position.y = 1;
-            sphere.checkCollisions = true;
+            // const sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+            // // Move the sphere upward 1/2 its height
+            // sphere.position.y = 1;
+            // sphere.checkCollisions = true;
 
-            var boundingBox = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(sphere)
+            // var boundingBox = BABYLON.BoundingBoxGizmo.MakeNotPickableAndWrapInBoundingBox(sphere)
 
-            var utilLayer = new BABYLON.UtilityLayerRenderer(scene)
-            utilLayer.utilityLayerScene.autoClearDepthAndStencil = false;
-            var gizmo = new BABYLON.BoundingBoxGizmo(BABYLON.Color3.FromHexString("#0984e3"), utilLayer)
-            gizmo.attachedMesh = boundingBox;
+            // var utilLayer = new BABYLON.UtilityLayerRenderer(scene)
+            // utilLayer.utilityLayerScene.autoClearDepthAndStencil = false;
+            // var gizmo = new BABYLON.BoundingBoxGizmo(BABYLON.Color3.FromHexString("#0984e3"), utilLayer)
+            // gizmo.attachedMesh = boundingBox;
 
-            var sixDofDragBehavior = new BABYLON.PointerDragBehavior()
-            boundingBox.addBehavior(sixDofDragBehavior)
-            var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
-            boundingBox.addBehavior(multiPointerScaleBehavior)
+            // var sixDofDragBehavior = new BABYLON.PointerDragBehavior()
+            // boundingBox.addBehavior(sixDofDragBehavior)
+            // var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
+            // boundingBox.addBehavior(multiPointerScaleBehavior)
 
 
 
@@ -751,15 +755,20 @@ export default class Viewer extends Component {
 
 
             canvas.addEventListener("click", function (event) {
+                var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                // alert("Klick")
+                console.log(pickResult.pickedMesh)
                 if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
                     return;
                 }
 
-                event.preventDefault();
+                // this was causing nothing to be able to be pickable
+                // 
+                if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
+                    event.preventDefault();
+                }
 
-                var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-                // alert("Klick")
-                console.log(pickResult.pickedMesh)
+
                 console.log(pickResult.pickedMesh.name)
             });
 
@@ -791,17 +800,29 @@ export default class Viewer extends Component {
     }
 }
 
+// function SetupLighthing(scene) {
+//     var lighting = [];
 
+//      // HEMLIGHT SETTINGS
+//     var hemLight = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+//     hemLight.intensity = 0.2;
+//     hemLight.specular = BABYLON.Color3.Black();
+//     hemLight.groundColor = scene.clearColor.scale(0.75);
 
+//     // DIRECTIONAL LIGHT SETTINGS
+//     var dirLight = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(0, -0.5, -1.0), scene);
+//     dirLight.position = new BABYLON.Vector3(0, 130, 130);
 
+//     // SHADOW GENERATION SETTINGS
+//     var shadowGenerator = new BABYLON.ShadowGenerator(3072, dirLight);
+//     shadowGenerator.usePercentageCloserFiltering = true;
 
+//     lighting.push(hemLight);
+//     lighting.push(dirLight);
+//     lighting.push(shadowGenerator);
 
-
-
-
-
-
-
+//     return lighting;
+// }
 
 function StartButton() {
 
