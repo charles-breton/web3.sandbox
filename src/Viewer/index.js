@@ -82,23 +82,36 @@ export default class Viewer extends Component {
 
 
             // Initialize GizmoManager
-            var gizmoManager = new BABYLON.GizmoManager(scene)
-            gizmoManager.boundingBoxGizmoEnabled = true
+            var gizmoManager = new BABYLON.GizmoManager(scene);
+            gizmoManager.boundingBoxGizmoEnabled = true;
+            gizmoManager.rotationGizmoEnabled = true;
+            gizmoManager.positionGizmoEnabled = true;
+
+            // gizmoManager.onAttachedToMeshObservable.add((mesh) => {
+            //     console.log(mesh);
+            //     if (mesh.name === "BackgroundHelper") {
+            //         gizmoManager.boundingBoxGizmoEnabled = false;
+            //         gizmoManager.rotationGizmoEnabled = false;
+            //     } else {
+            //         gizmoManager.boundingBoxGizmoEnabled = true;
+            //         gizmoManager.rotationGizmoEnabled = true;
+            //     }
+            // });
 
             // ENV BUILDER SETTINGS 
             var helper = scene.createDefaultEnvironment({
                 enableGroundShadow: true,
                 enableGroundMirror: true,
-                groundMirrorFallOffDistance: 0,
+                groundMirrorFallOffDistance: 1,
                 groundSize: 500,
                 skyboxSize: 500,
-                isPickable: false,
             });
 
             helper.setMainColor(scene.clearColor);
             helper.groundMaterial.diffuseTexture = null;
-            helper.groundMaterial.alpha = 0;
+            helper.groundMaterial.alpha = 1;
             helper.groundMaterial.fogEnabled = true;
+            helper.isPickable = false;
 
             // ADD SHAWDOWS TO CHARACTER
             var addShadows = function (mesh) {
@@ -645,7 +658,7 @@ export default class Viewer extends Component {
             });
 
             var box = BABYLON.MeshBuilder.CreateBox("box", { size: 30 }, scene);
-            box.position = new BABYLON.Vector3(8, 1, 18);
+            box.position = new BABYLON.Vector3(8, 10, 18);
 
             addToMirror(box);
             addShadows(box);
@@ -668,10 +681,10 @@ export default class Viewer extends Component {
                 instance.position.x = 250 - Math.random() * 500;
                 instance.position.y = 200 - Math.random() * 200;
                 instance.position.z = 250 - Math.random() * 500;
-                instance.alwaysSelectAsActiveMesh = true;
+                // instance.alwaysSelectAsActiveMesh = true;
 
 
-                // alphas.push(Math.random());
+                alphas.push(Math.random());
                 baseColors.push(new BABYLON.Color4(Math.random(), Math.random(), Math.random(), Math.random()));
                 instance.instancedBuffers.color = baseColors[baseColors.length - 1].clone();
                 instance.checkCollisions = true;
@@ -704,19 +717,19 @@ export default class Viewer extends Component {
             // Restrict gizmos to only spheres
             // gizmoManager.attachableMeshes = spheres
 
-            // Toggle gizmos with keyboard buttons
+            // // Toggle gizmos with keyboard buttons
             // document.onkeydown = (e) => {
-            //     if (e.key == 'y') {
+            //     if (e.key === 'y') {
             //         console.log("WORKING")
             //         gizmoManager.positionGizmoEnabled = !gizmoManager.positionGizmoEnabled
             //     }
-            //     if (e.key == 'u') {
+            //     if (e.key === 'u') {
             //         gizmoManager.rotationGizmoEnabled = !gizmoManager.rotationGizmoEnabled
             //     }
-            //     if (e.key == 'h') {
+            //     if (e.key === 'h') {
             //         gizmoManager.scaleGizmoEnabled = !gizmoManager.scaleGizmoEnabled
             //     }
-            //     if (e.key == 'j') {
+            //     if (e.key === 'j') {
             //         gizmoManager.boundingBoxGizmoEnabled = !gizmoManager.boundingBoxGizmoEnabled
             //     }
             // }
@@ -757,21 +770,22 @@ export default class Viewer extends Component {
             canvas.addEventListener("click", function (event) {
                 var pickResult = scene.pick(scene.pointerX, scene.pointerY);
                 // alert("Klick")
-                console.log(pickResult.pickedMesh)
+                console.log(event)
                 if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
                     return;
                 }
 
                 // this was causing nothing to be able to be pickable
-                // 
                 if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
-                    event.preventDefault();
+                    console.log("WORKING")
+                    // event.preventDefault();
                 }
 
 
                 console.log(pickResult.pickedMesh.name)
             });
 
+            // canvas
 
 
             let reticule = addCrosshair(scene, camera)
