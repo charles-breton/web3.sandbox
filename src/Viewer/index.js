@@ -3,8 +3,8 @@ import * as BABYLON from '@babylonjs/core';
 import BabylonScene from '../BabylonScene'; // import the component above linking to file we just created.
 import { Vector3 } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
-import "@babylonjs/gui";
-
+import "@babylonjs/loaders";
+// import * as BABYLON.GUI from '@babylonjs/gui';
 
 const ybotURL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/ybot.babylon';
 // const m4URL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/m4a1.obj';
@@ -103,8 +103,8 @@ export default class Viewer extends Component {
                 enableGroundShadow: true,
                 enableGroundMirror: true,
                 groundMirrorFallOffDistance: 1,
-                groundSize: 500,
-                skyboxSize: 500,
+                groundSize: 250,
+                skyboxSize: 250,
             });
 
             helper.setMainColor(scene.clearColor);
@@ -657,8 +657,19 @@ export default class Viewer extends Component {
                 }
             });
 
+
+
+
+            // Create boxes in spaces
+            // CreateSpacesBoxes(scene)
+            // var box = createSpacesBoxes(scene)
+
+            // addToMirror(box);
+            // addShadows(box);
+
             var box = BABYLON.MeshBuilder.CreateBox("box", { size: 30 }, scene);
             box.position = new BABYLON.Vector3(8, 10, 18);
+            box.checkCollisions = true;
 
             addToMirror(box);
             addShadows(box);
@@ -758,6 +769,68 @@ export default class Viewer extends Component {
             // boundingBox.addBehavior(sixDofDragBehavior)
             // var multiPointerScaleBehavior = new BABYLON.MultiPointerScaleBehavior()
             // boundingBox.addBehavior(multiPointerScaleBehavior)
+
+
+
+            // Create the 3D UI manager
+            // var manager = new BABYLON.GUI.GUI3DManager(scene);
+
+            // // Create a horizontal stack panel
+            // var panel = new BABYLON.GUI.StackPanel3D();
+
+            // manager.addControl(panel);
+
+            // // Let's add some buttons!
+            // var addButton = function () {
+            //     // background
+            //     let disc = BABYLON.MeshBuilder.CreateDisc("button_disc", { radius: 0.8 }, scene);
+            //     let mat = new BABYLON.StandardMaterial("button_mat", scene);
+            //     mat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+            //     disc.material = mat;
+            //     disc.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+            //     let pos = box.getAbsolutePivotPoint();
+            //     disc.position = pos;
+            //     disc.position.y += 3;
+
+            //     // icon
+            //     let iconplane = BABYLON.MeshBuilder.CreatePlane("iconplane", { size: 0.8 }, scene);
+            //     let mat0 = new BABYLON.StandardMaterial("icon_mat", scene);
+            //     mat0.opacityTexture = new BABYLON.Texture("https://i.imgur.com/rZKK60K.png", scene);
+            //     mat0.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            //     iconplane.position = disc.position.clone();
+            //     iconplane.position.z -= .1;
+            //     iconplane.material = mat0;
+
+            //     // https://doc.babylonjs.com/divingDeeper/mesh/mergeMeshes
+            //     let finalMesh = BABYLON.Mesh.MergeMeshes(
+            //         [disc, iconplane], // meshes list
+            //         true, // dispose original meshes
+            //         null, // don't care here
+            //         null, // don't care here
+            //         null, // don't care here
+            //         true // yep we want multimaterials
+            //     );
+
+            //     let button = new BABYLON.GUI.MeshButton3D(finalMesh);
+            //     panel.addControl(button);
+
+            //     button.pointerEnterAnimation = () => {
+            //         button.mesh.scaling.x = 0.9;
+            //         button.mesh.scaling.y = 0.9;
+            //         document.body.style.cursor = 'pointer';
+            //     }
+
+            //     button.pointerOutAnimation = () => {
+            //         button.mesh.scaling.x = 0.8;
+            //         button.mesh.scaling.y = 0.8;
+            //         document.body.style.cursor = '';
+            //     }
+            // }
+
+            // addButton();
+
+
+
 
 
 
@@ -989,12 +1062,12 @@ function addCrosshair(scene, camera) {
     }
 
     const createNavigate = () => {
-        ctx.fillStyle = 'transparent'
+        ctx.fillStyle = 'solid'
         ctx.clearRect(0, 0, w, w)
         createOutline()
 
         ctx.strokeStyle = 'rgba(48, 48, 48, 5.9)'
-        ctx.lineWidth = 3.5
+        ctx.lineWidth = 10
         ctx.moveTo(w * 0.5, w * 0.25)
         ctx.lineTo(w * 0.5, w * 0.75)
 
@@ -1011,10 +1084,11 @@ function addCrosshair(scene, camera) {
     let material = new BABYLON.StandardMaterial('reticule', scene)
     material.diffuseTexture = texture
     material.opacityTexture = texture
-    material.emissiveColor.set(1, 1, 1)
+    material.emissiveColor.set(0, 1, 0)
+    // material.color = new BABYLON.Color3(1, 1, 1);
     material.disableLighting = true
 
-    let plane = BABYLON.MeshBuilder.CreatePlane('reticule', { size: 0.04 }, scene)
+    let plane = BABYLON.MeshBuilder.CreatePlane('reticule', { size: 0.05 }, scene)
     plane.material = material
     plane.position.set(0, 0, 1.1)
     plane.isPickable = false
@@ -1026,4 +1100,52 @@ function addCrosshair(scene, camera) {
     // return null
     return reticule
 
-} 
+}
+
+
+function createSpacesBoxes(scene) {
+
+    var box = BABYLON.MeshBuilder.CreateBox("box", { size: 30 }, scene);
+    box.position = new BABYLON.Vector3(8, 10, 18);
+    box.checkCollisions = true;
+
+
+    box.material = new BABYLON.StandardMaterial("lightBox", scene);
+
+    // box.alwaysSelectAsActiveMesh = true;
+
+    let instanceCount = instanceBox;
+
+    box.registerInstancedBuffer("color", 4);
+    box.instancedBuffers.color = new BABYLON.Color4(1, 1, 1, Math.random());
+
+    let baseColors = [];
+    let alphas = [];
+
+    let boxInstances = [];
+
+    for (var index = 0; index < instanceCount - 1; index++) {
+        let instance = box.createInstance("box" + index);
+        instance.position.x = 250 - Math.random() * 500;
+        instance.position.y = 200 - Math.random() * 200;
+        instance.position.z = 250 - Math.random() * 500;
+        // instance.alwaysSelectAsActiveMesh = true;
+
+
+        alphas.push(Math.random());
+        baseColors.push(new BABYLON.Color4(Math.random(), Math.random(), Math.random(), Math.random()));
+        instance.instancedBuffers.color = baseColors[baseColors.length - 1].clone();
+        instance.checkCollisions = true;
+
+
+
+        boxInstances.push(instance);
+
+        // instance.setEnabled(false);
+
+        // var startPosition = new BABYLON.Vector3(instance.position.x, instance.position.y, instance.position.z);
+        // var endPosition = new BABYLON.Vector3(instance.position.x + Math.random(), instance.position.y + Math.random(), instance.position.z + Math.random());
+        // BABYLON.Animation.CreateAndStartAnimation("anim", box, "position", 30, 100, startPosition, endPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+    }
+}

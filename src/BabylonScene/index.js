@@ -29,10 +29,13 @@ export default class BabylonScene extends Component {
     scene.collisionsEnabled = true;
     scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
     scene.fogEnabled = true;
-    scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
-    scene.fogDensity = 0.01;
-    scene.fogColor = new BABYLON.Color3(0.8, 0.9, 1.0);
-    scene.clearColor = scene.fogColor;
+    scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
+    scene.fogDensity = 0.1;
+    // scene.fogColor = BABYLON.Color3(1, 1, 1)
+
+    // scene.fogDensity = 0.01;
+    scene.fogColor = new BABYLON.Color3(0, 0, 0);
+    // scene.clearColor = scene.fogColor;
 
     this.scene = scene;
     if (typeof this.props.onSceneMount === 'function') {
