@@ -24,7 +24,7 @@ export default class BabylonScene extends Component {
     this.engine = new BABYLON.Engine(this.canvas, true, this.props.engineOptions, this.props.adaptToDeviceRatio);
     let scene = new BABYLON.Scene(this.engine);
 
-    //ADD ELEMENTS TO SCENE
+    //ADD PHYSICS TO SCENE
 
     scene.collisionsEnabled = true;
     scene.gravity = new BABYLON.Vector3(0, -9.81, 0);

@@ -4,7 +4,9 @@ import BabylonScene from '../BabylonScene'; // import the component above linkin
 import { Vector3 } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import "@babylonjs/loaders";
-// import * as BABYLON.GUI from '@babylonjs/gui';
+import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
+import { GUI } from '@babylonjs/gui'
+
 
 const ybotURL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/ybot.babylon';
 // const m4URL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/m4a1.obj';
@@ -829,12 +831,23 @@ export default class Viewer extends Component {
 
             // addButton();
 
+            var plane = BABYLON.Mesh.CreatePlane("plane", 2);
+            plane.parent = box;
+            plane.position.y = 2;
 
 
+            var advancedTexture = AdvancedDynamicTexture.CreateForMesh(plane)
 
-
-
-
+            var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
+            button1.width = 1;
+            button1.height = 0.4;
+            button1.color = "white";
+            button1.fontSize = 50;
+            button1.background = "green";
+            button1.onPointerUpObservable.add(function () {
+                alert("you did it!");
+            });
+            advancedTexture.addControl(button1);
 
             // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
             const ground = null;
