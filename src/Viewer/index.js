@@ -728,6 +728,8 @@ export default class Viewer extends Component {
 
 
                 boxInstances.push(instance);
+                // gizmoManager.attachableMeshes = instance
+                // gizmoManager.attachToMesh(box);
 
                 // instance.setEnabled(false);
 
@@ -737,6 +739,9 @@ export default class Viewer extends Component {
 
             }
 
+            // gizmoManager.attachableMeshes = boxInstances;
+
+            // gizmoManager.attachToMesh(boxInstances);
             // gizmoManager.attachableMeshes = boxInstances;
 
             // Create simple meshes
@@ -877,25 +882,25 @@ export default class Viewer extends Component {
             const ground = null;
 
 
-            canvas.addEventListener("click", function (event) {
-                var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-                // alert("Klick")
-                console.log(event)
-                if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
-                    return;
-                }
+            // canvas.addEventListener("click", function (event) {
+            //     var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+            //     // alert("Klick")
+            //     console.log(event)
+            //     if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
+            //         return;
+            //     }
 
 
 
-                // this was causing nothing to be able to be pickable
-                if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
-                    console.log("WORKING")
-                    // event.preventDefault();
-                }
+            //     // this was causing nothing to be able to be pickable
+            //     if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
+            //         console.log("WORKING")
+            //         // event.preventDefault();
+            //     }
 
 
-                console.log(pickResult.pickedMesh.name)
-            });
+            //     console.log(pickResult.pickedMesh.name)
+            // });
 
             // canvas
 
