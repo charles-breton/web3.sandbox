@@ -4,8 +4,8 @@ import BabylonScene from '../BabylonScene'; // import the component above linkin
 import { Vector3 } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import "@babylonjs/loaders";
-import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
-import { GUI } from '@babylonjs/gui'
+
+import * as GUI from '@babylonjs/gui'
 
 
 const ybotURL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/ybot.babylon';
@@ -88,17 +88,30 @@ export default class Viewer extends Component {
             gizmoManager.boundingBoxGizmoEnabled = true;
             gizmoManager.rotationGizmoEnabled = true;
             gizmoManager.positionGizmoEnabled = true;
+            gizmoManager.clearGizmoOnEmptyPointerEvent = true;
 
-            // gizmoManager.onAttachedToMeshObservable.add((mesh) => {
-            //     console.log(mesh);
-            //     if (mesh.name === "BackgroundHelper") {
-            //         gizmoManager.boundingBoxGizmoEnabled = false;
-            //         gizmoManager.rotationGizmoEnabled = false;
-            //     } else {
-            //         gizmoManager.boundingBoxGizmoEnabled = true;
-            //         gizmoManager.rotationGizmoEnabled = true;
-            //     }
-            // });
+
+            gizmoManager.onAttachedToMeshObservable.add((mesh) => {
+                console.log(mesh);
+                console.log(mesh);
+                console.log(mesh);
+
+                // if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
+                if (mesh === null) {
+                    console.log("WORKING")
+                    gizmoManager.boundingBoxGizmoEnabled = false;
+                    gizmoManager.rotationGizmoEnabled = false;
+                    gizmoManager.positionGizmoEnabled = false;
+                    gizmoManager.clearGizmoOnEmptyPointerEvent = false;
+                } else {
+                    gizmoManager.boundingBoxGizmoEnabled = true;
+                    gizmoManager.rotationGizmoEnabled = true;
+                    gizmoManager.positionGizmoEnabled = true;
+                    gizmoManager.clearGizmoOnEmptyPointerEvent = true;
+                }
+            });
+
+
 
             // ENV BUILDER SETTINGS 
             var helper = scene.createDefaultEnvironment({
@@ -606,6 +619,7 @@ export default class Viewer extends Component {
 
             var pointerDown = function (mesh) {
                 currentMesh = mesh;
+                console.log(currentMesh)
                 startingPoint = getGroundPosition();
                 if (startingPoint) { // we need to disconnect camera from canvas
                     setTimeout(function () {
@@ -678,6 +692,15 @@ export default class Viewer extends Component {
             box.material = new BABYLON.StandardMaterial("lightBox", scene);
 
             // box.alwaysSelectAsActiveMesh = true;
+
+            // Initialize GizmoManager
+            // var utilLayer = new BABYLON.UtilityLayerRenderer(scene);
+            // utilLayer.utilityLayerScene.autoClearDepthAndStencil = false;
+            // var gizmo = new BABYLON.BoundingBoxGizmo(BABYLON.Color3.FromHexString("#0984e3"), utilLayer)
+            // gizmo.attachedMesh = box;
+            gizmoManager.attachableMeshes = [box];
+            gizmoManager.attachToMesh(box);
+
 
             let instanceCount = instanceBox;
 
@@ -832,11 +855,12 @@ export default class Viewer extends Component {
             // addButton();
 
             var plane = BABYLON.Mesh.CreatePlane("plane", 2);
-            plane.parent = box;
             plane.position.y = 2;
+            plane.position.x = 10;
 
 
-            var advancedTexture = AdvancedDynamicTexture.CreateForMesh(plane)
+            // var advancedTexture = AdvancedDynamicTexture.CreateForMesh(plane)
+            var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
 
             var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
             button1.width = 1;
@@ -860,6 +884,8 @@ export default class Viewer extends Component {
                 if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
                     return;
                 }
+
+
 
                 // this was causing nothing to be able to be pickable
                 if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
@@ -1119,7 +1145,7 @@ function addCrosshair(scene, camera) {
 function createSpacesBoxes(scene) {
 
     var box = BABYLON.MeshBuilder.CreateBox("box", { size: 30 }, scene);
-    box.position = new BABYLON.Vector3(8, 10, 18);
+    box.position = new BABYLON.Vector3(8, -30, 18);
     box.checkCollisions = true;
 
 
@@ -1161,4 +1187,5 @@ function createSpacesBoxes(scene) {
         // BABYLON.Animation.CreateAndStartAnimation("anim", box, "position", 30, 100, startPosition, endPosition, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
     }
+    box.isEnabled = false;
 }
