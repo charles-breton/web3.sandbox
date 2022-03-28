@@ -48,7 +48,7 @@ var mouseMin = -35, mouseMax = 100;
 
 // instances of box
 
-var instanceBox = 50;
+var instanceBox = 5;
 
 
 
