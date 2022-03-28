@@ -48,6 +48,12 @@ export default class BabylonScene extends Component {
     scene.fogColor = new BABYLON.Color3(0, 0, 0);
     // scene.clearColor = scene.fogColor;
 
+    // BABYLON.SceneLoader.AppendAsync("https://www.babylonjs.com/scenes/espilit/",
+    //   "espilit.incremental.babylon", scene, function () {
+    //     scene.activeCamera.attachControl(this.scene, true)
+    //   });
+
+
     this.scene = scene;
     if (typeof this.props.onSceneMount === 'function') {
       this.props.onSceneMount({

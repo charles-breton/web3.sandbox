@@ -58,6 +58,11 @@ export default class Viewer extends Component {
         this.onSceneMount = (e) => {
             const { canvas, scene, engine } = e;
 
+
+            // Add Asset Manager
+            // var assetsManager = new BABYLON.AssetsManager(scene);
+
+
             // SETUP CAMERA
 
             // FREE CAMERA (NON MESH)
@@ -100,7 +105,6 @@ export default class Viewer extends Component {
 
                 // if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
                 if (mesh === null) {
-                    console.log("WORKING")
                     gizmoManager.boundingBoxGizmoEnabled = false;
                     gizmoManager.rotationGizmoEnabled = false;
                     gizmoManager.positionGizmoEnabled = false;
@@ -210,7 +214,6 @@ export default class Viewer extends Component {
 
             //CHARACTER
             engine.displayLoadingUI();
-
             BABYLON.SceneLoader.ImportMesh("", "", ybotURL, scene, function (newMeshes, particleSystems, skeletons) {
                 skeleton = skeletons[0];
                 var body = newMeshes[1];
@@ -286,6 +289,9 @@ export default class Viewer extends Component {
 
                 engine.hideLoadingUI();
             }, function (evt) { });
+
+
+
 
 
 
@@ -372,7 +378,6 @@ export default class Viewer extends Component {
 
                 //MOVE
                 if (directionX !== 0 || directionZ !== 0) {
-                    console.log("WORKING")
                     if (run !== 1) {
                         currentState = runAnim;
                         speed = lerp(speed, runSpeed, runAnim.weight);
@@ -439,7 +444,6 @@ export default class Viewer extends Component {
 
 
                 if (directionX !== 0 || directionZ !== 0) {
-                    console.log("WORKING")
                     if (up === 1) {
                         if (run !== 1) {
                             currentState = walkAnim;
@@ -992,38 +996,74 @@ export default class Viewer extends Component {
 
 
 
-            // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
-            const ground = null;
-
-
-            // canvas.addEventListener("click", function (event) {
-            //     var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-            //     // alert("Klick")
-            //     console.log(event)
-            //     if (camera.inertialAlphaOffset || camera.inertialBetaOffset) {
-            //         return;
-            //     }
 
 
 
-            //     // this was causing nothing to be able to be pickable
-            //     if (pickResult.pickedMesh.name === "BackgroundPlane" || pickResult.pickedMesh.name === "BackgroundSkybox") {
-            //         console.log("WORKING")
-            //         // event.preventDefault();
-            //     }
 
 
-            //     console.log(pickResult.pickedMesh.name)
-            // });
 
-            // canvas
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            var advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+            var textblockLogo = new GUI.TextBlock("textLogo");
+            textblockLogo.text = "charles \n breton.";
+            textblockLogo.fontSize = 24;
+            textblockLogo.top = '-45%';
+            textblockLogo.left = '-47%';
+            textblockLogo.color = "white";
+            advancedTexture.addControl(textblockLogo);
+
+
+            var buttonblockMode = new GUI.Checkbox("checkerMode");
+            buttonblockMode.width = "20px";
+            buttonblockMode.height = "20px";
+            buttonblockMode.text = "text";
+            textblockLogo.fontSize = 24;
+            buttonblockMode.top = '-45%';
+            buttonblockMode.left = '47%';
+            buttonblockMode.color = "white";
+            // buttonblockMode.isChecked = true;
+            advancedTexture.addControl(buttonblockMode);
+
+
+            advancedTexture.registerClipboardEvents();
+
+            advancedTexture.onClipboardObservable.add((ev) => {
+                // Copy listener
+                if (ev.type === BABYLON.ClipboardEventTypes.CUT) {
+                    buttonblockMode.isChecked = !buttonblockMode.isChecked
+                }
+            });
 
             let reticule = addCrosshair(scene, camera)
 
             let startButton = StartButton();
             // let FPSCounter = FpsCounter();
 
+
+
+            // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
+            const ground = null;
 
 
             engine.runRenderLoop(() => {
