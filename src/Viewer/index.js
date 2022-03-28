@@ -60,7 +60,8 @@ export default class Viewer extends Component {
             // SETUP CAMERA
 
             // FREE CAMERA (NON MESH)
-            var camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 0, 10), scene);
+            var camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 0, 6), scene);
+            // camera.rotation = new BABYLON.Vector3(BABYLON.Tools.ToRadians(180));
             camera.inputs.clear();
             camera.minZ = 0;
 
@@ -154,10 +155,10 @@ export default class Viewer extends Component {
             // CAMERA SETUP
             var firstPersonCamera = {
                 middle: {
-                    position: new BABYLON.Vector3(0, 1.75, 0.25),
+                    position: new BABYLON.Vector3(0, 1.75, -1),
                     fov: 1.25,
-                    mouseMin: -45,
-                    mouseMax: 45
+                    mouseMin: -90,
+                    mouseMax: 90
                 }
             };
 
@@ -192,6 +193,7 @@ export default class Viewer extends Component {
             // SWITCH FIRST TO THIRD PERSON VIEW [NEED IMPLEMENTS IF WANT TO CHANGE TO THIRD]
             function switchCamera(type) {
                 camera.position = type.position.divide(camera.parent.scaling);
+                camera.rotation.y = BABYLON.Tools.ToRadians(180);
                 camera.fov = type.fov;
                 mouseMin = type.mouseMin;
                 mouseMax = type.mouseMax;
@@ -213,7 +215,6 @@ export default class Viewer extends Component {
                 var body = newMeshes[1];
                 var joints = newMeshes[0];
                 body.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
-                body.rotation.y = BABYLON.Tools.ToRadians(180);
                 joints.parent = body;
                 body.parent = character;
 
@@ -279,31 +280,11 @@ export default class Viewer extends Component {
                 //     switchCamera(thirdPersonCamera.leftRun);
                 // }
 
-                main.position = new BABYLON.Vector3(10, 0, 10);
+                main.position = new BABYLON.Vector3(0, 0, -8);
 
 
                 engine.hideLoadingUI();
             }, function (evt) { });
-
-
-
-            // BABYLON.SceneLoader.ImportMesh(testing, "BrainStem.gltf", scene, function (meshes) {
-            //     scene.createDefaultCameraOrLight(true, true, true);
-            //     scene.createDefaultEnvironment();
-
-            // });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -339,6 +320,9 @@ export default class Viewer extends Component {
                         }
                     }
                 }
+
+
+
             });
 
 
@@ -387,6 +371,7 @@ export default class Viewer extends Component {
 
                 //MOVE
                 if (directionX !== 0 || directionZ !== 0) {
+                    console.log("WORKING")
                     if (run !== 1) {
                         currentState = runAnim;
                         speed = lerp(speed, runSpeed, runAnim.weight);
@@ -453,13 +438,14 @@ export default class Viewer extends Component {
 
 
                 if (directionX !== 0 || directionZ !== 0) {
+                    console.log("WORKING")
                     if (up === 1) {
                         if (run !== 1) {
                             currentState = walkAnim;
-                            speed = lerp(speed, walkSpeed, walkAnim.weight);
+                            speed = -lerp(speed, walkSpeed, walkAnim.weight);
                         } else {
                             currentState = runAnim;
-                            speed = lerp(speed, runSpeed, runAnim.weight);
+                            speed = -lerp(speed, runSpeed, runAnim.weight);
                         }
                     } else {
                         // currentState = "walk";
@@ -859,24 +845,85 @@ export default class Viewer extends Component {
 
             // addButton();
 
-            var plane = BABYLON.Mesh.CreatePlane("plane", 2);
-            plane.position.y = 2;
-            plane.position.x = 10;
 
 
-            // var advancedTexture = AdvancedDynamicTexture.CreateForMesh(plane)
-            var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
 
-            var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
-            button1.width = 1;
-            button1.height = 0.4;
-            button1.color = "white";
-            button1.fontSize = 50;
-            button1.background = "green";
-            button1.onPointerUpObservable.add(function () {
-                alert("you did it!");
-            });
-            advancedTexture.addControl(button1);
+
+
+            //Load GUI before scene loads
+            // loadGUI();
+
+            // async function loadGUI() {
+            //     var guiAdvancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);
+            //     let loadedGUI = await advancedTexture.parseFromURLAsync("https://raw.githubusercontent.com/CharlesBreton99/sandbox-main/master/src/assets/guiTexture.json")
+            // }
+
+
+
+
+            // var plane = BABYLON.Mesh.CreatePlane("plane", 2);
+            // plane.position.y = 2;
+            // plane.position.x = 10;
+
+
+            // // var advancedTexture = AdvancedDynamicTexture.CreateForMesh(plane)
+            // var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
+
+
+            // var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
+            // button1.width = 1;
+            // button1.height = 0.4;
+            // button1.color = "white";
+            // button1.fontSize = 50;
+            // button1.background = "green";
+            // button1.onPointerUpObservable.add(function () {
+            //     alert("you did it!");
+            // });
+            // advancedTexture.addControl(button1);
+
+            // Create the 3D UI manager
+            var manager = new GUI.GUI3DManager(scene);
+
+            // Create a horizontal stack panel
+            var panel = new GUI.StackPanel3D();
+
+            panel.margin = 0.02;
+            // panel.scaling = 10;
+            // panel.width = 0.25;
+            // panel.rotation = 0.2;
+
+
+            manager.addControl(panel);
+            panel.position = new BABYLON.Vector3(0, 2, -4);
+            // panel.position = new BABYLON.Vector3(BABYLON.Tools.ToRadians(180));
+
+            // Let's add some buttons!
+            var addButton = function () {
+                var button = new GUI.Button3D("titles");
+
+                panel.addControl(button);
+                panel.isVertical = true;
+
+
+                button.color = "black"
+                button.width = 10
+                button.onPointerUpObservable.add(function () {
+                    console.log("WORKING");
+                });
+
+                var text1 = new GUI.TextBlock();
+                text1.text = "ABOUT ME";
+                text1.color = "white";
+                // text1.position.z = -4;
+
+                text1.fontSize = 24;
+                button.content = text1;
+            }
+
+            addButton();
+            addButton();
+            addButton();
+
 
             // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
             const ground = null;

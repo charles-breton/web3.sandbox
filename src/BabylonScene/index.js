@@ -8,6 +8,17 @@ export default class BabylonScene extends Component {
     // private engine: BABYLON.Engine;
     // private canvas: HTMLCanvasElement;
     super(...arguments);
+
+    // Might fix problem with GUI not showing up
+    this.state = {
+      windowDimension: {
+        width: window.innerWidth,
+        height: window.innerHeight
+      },
+      nodeCount: 0,
+      grid: []
+    };
+
     this.onResizeWindow = () => {
       if (this.engine) {
         this.engine.resize();
