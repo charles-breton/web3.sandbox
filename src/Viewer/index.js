@@ -6,6 +6,7 @@ import "@babylonjs/loaders/glTF";
 import "@babylonjs/loaders";
 
 import * as GUI from '@babylonjs/gui'
+import { Rectangle } from 'react-babylonjs';
 
 
 const ybotURL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/ybot.babylon';
@@ -305,7 +306,7 @@ export default class Viewer extends Component {
                                 keyboard.getInput(65), //A
                                 keyboard.getInput(68), //D
                                 keyboard.getInput(32), //Space
-                                keyboard.getInput(16), //Shift
+                                // keyboard.getInput(16), //Shift
                                 mouse.getInput(1) // Left Click to interact
                             );
                         } else {
@@ -881,6 +882,59 @@ export default class Viewer extends Component {
             // });
             // advancedTexture.addControl(button1);
 
+
+
+            // var plane1 = BABYLON.Mesh.CreatePlane("plane", 2);
+            // plane1.parent = boxTitle;
+            // plane1.position = new BABYLON.Vector3(0, 3, -1);
+
+            // var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane1);
+
+
+            // var titleHeaders = ["NFTS", "PROJECTS", "ABOUT"];
+
+            // let button = GUI.Button.CreateSimpleButton("but1", "ABOUT");
+            // button.width = 1;
+            // button.height = 0.4;
+            // button.color = "white";
+            // button.fontSize = 50;
+            // button.background = "green";
+            // button.onPointerUpObservable.add(function () {
+            //     alert("you did it!");
+            // });
+            // advancedTexture.addControl(button);
+
+
+
+            // for (let i = 0; i < titleHeaders.length; i++) {
+            //     let button = GUI.Button.CreateSimpleButton("but" + i, titleHeaders[i]);
+            //     button.width = 1;
+            //     button.height = 0.4;
+            //     button.color = "white";
+            //     button.fontSize = 50;
+            //     button.background = "green";
+            //     button.position = new BABYLON.Vector3(10, 0, 0)
+            //     button.onPointerUpObservable.add(function () {
+            //         alert("you did it!");
+            //     });
+            //     advancedTexture.addControl(button);
+            // }
+            // var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
+            // button1.width = 1;
+            // button1.height = 0.4;
+            // button1.color = "white";
+            // button1.fontSize = 50;
+            // button1.background = "green";
+            // button1.onPointerUpObservable.add(function () {
+            //     alert("you did it!");
+            // });
+            // advancedTexture.addControl(button1);
+
+
+
+            var boxTitle = BABYLON.MeshBuilder.CreateBox("box", { height: 10, width: 4, depth: 0.25 });
+            boxTitle.position.z = -3.8
+
             // Create the 3D UI manager
             var manager = new GUI.GUI3DManager(scene);
 
@@ -897,32 +951,45 @@ export default class Viewer extends Component {
             panel.position = new BABYLON.Vector3(0, 2, -4);
             // panel.position = new BABYLON.Vector3(BABYLON.Tools.ToRadians(180));
 
+
+            var titleHeaders = ["NFTS", "PROJECTS", "ABOUT"];
+
             // Let's add some buttons!
             var addButton = function () {
-                var button = new GUI.Button3D("titles");
-
-                panel.addControl(button);
                 panel.isVertical = true;
 
+                for (let i = 0; i < titleHeaders.length; i++) {
+                    let button = new GUI.Button3D("titles" + i);
 
-                button.color = "black"
-                button.width = 10
-                button.onPointerUpObservable.add(function () {
-                    console.log("WORKING");
-                });
 
-                var text1 = new GUI.TextBlock();
-                text1.text = "ABOUT ME";
-                text1.color = "white";
-                // text1.position.z = -4;
 
-                text1.fontSize = 24;
-                button.content = text1;
+                    button.onPointerUpObservable.add(function (info) {
+                        console.log(info._y);
+                        if (info._y < 1.5 && info._y !== 0) {
+                            console.log("NFTS")
+                        } else if (info._y > 2.5) {
+                            console.log("ABOUT")
+                        } else if (info._y > 1.5 && info._y < 2.5) {
+                            console.log("PROJECTS")
+                        } else {
+                            console.log("NO SELECTION")
+                        }
+                    });
+                    let text1 = new GUI.TextBlock();
+                    text1.text = titleHeaders[i];
+                    text1.color = "white";
+                    text1.fontSize = 24;
+                    button.content = text1;
+
+                    panel.addControl(button);
+                }
+
+
+
             }
 
             addButton();
-            addButton();
-            addButton();
+
 
 
             // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
