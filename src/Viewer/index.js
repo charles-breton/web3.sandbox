@@ -5,8 +5,10 @@ import { Vector3 } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import "@babylonjs/loaders";
 
+
 import * as GUI from '@babylonjs/gui'
-import { Rectangle } from 'react-babylonjs';
+
+
 
 
 const ybotURL = 'https://raw.githubusercontent.com/TheNosiriN/Babylon-Assets/master/ybot.babylon';
@@ -53,7 +55,12 @@ var instanceBox = 5;
 
 
 export default class Viewer extends Component {
+
+
+
+
     constructor() {
+
         super(...arguments);
         this.onSceneMount = (e) => {
             const { canvas, scene, engine } = e;
@@ -945,7 +952,7 @@ export default class Viewer extends Component {
             // Create a horizontal stack panel
             var panel = new GUI.StackPanel3D();
 
-            panel.margin = 0.02;
+            panel.margin = 0.05;
             // panel.scaling = 10;
             // panel.width = 0.25;
             // panel.rotation = 0.2;
@@ -964,6 +971,10 @@ export default class Viewer extends Component {
 
                 for (let i = 0; i < titleHeaders.length; i++) {
                     let button = new GUI.Button3D("titles" + i);
+                    button.imageUrl = "../assets/info.png";
+                    // button.imageUrl("../assets/info.png")
+                    // addToMirror(button);
+
 
 
 
@@ -971,6 +982,14 @@ export default class Viewer extends Component {
                         console.log(info._y);
                         if (info._y < 1.5 && info._y !== 0) {
                             console.log("NFTS")
+
+
+
+
+
+
+
+
                         } else if (info._y > 2.5) {
                             console.log("ABOUT")
                         } else if (info._y > 1.5 && info._y < 2.5) {
@@ -981,11 +1000,12 @@ export default class Viewer extends Component {
                     });
                     let text1 = new GUI.TextBlock();
                     text1.text = titleHeaders[i];
-                    text1.color = "white";
-                    text1.fontSize = 24;
+                    text1.color = "#FFFFFF";
+                    text1.fontSize = 48;
                     button.content = text1;
 
                     panel.addControl(button);
+                    // addToMirror(panel);
                 }
 
 
@@ -993,35 +1013,6 @@ export default class Viewer extends Component {
             }
 
             addButton();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             var advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
