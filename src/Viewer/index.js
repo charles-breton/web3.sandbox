@@ -65,15 +65,15 @@ export default class Viewer extends Component {
         var closeButton = document.querySelector(".close-button");
 
         function toggleModal() {
-            modal.classList.toggle("show-modal");
+            // modal.classList.toggle("show-modal");
         }
         // function windowOnClick(event) {
         //     if (event.target === modal) {
         //         toggleModal();
         //     }
         // }
-        trigger.addEventListener("click", toggleModal);
-        closeButton.addEventListener("click", toggleModal);
+        // trigger.addEventListener("click", toggleModal);
+        // closeButton.addEventListener("click", toggleModal);
         // window.addEventListener("click", windowOnClick);
 
 
