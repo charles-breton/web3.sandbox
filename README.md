@@ -1,6 +1,7 @@
 # SANDBOX
  
 `FOR LATEST VERSION`
+
 TO GET APPLICATION STARTED 
 
 1 - CLONE REPO
@@ -33,9 +34,13 @@ TO GET APPLICATION STARTED
  YARN
   > yarn start
   
+ 
 
+ 
 
+ 
 `OPEN PROJECT LIKE IN VIDEO`
+
 
 1 - DO STEP 1 - 5
 
@@ -43,9 +48,9 @@ TO GET APPLICATION STARTED
 ![image](https://user-images.githubusercontent.com/70980498/171046471-7571ff04-bbf1-419b-952f-bb4927b8ad96.png)
 
 3 - OPEN UP `Git: View History (git log)`
-![image](https://user-images.githubusercontent.com/70980498/171046652-d7c65304-40d1-4250-9738-d48843a26b2b.png)
+![image](https://user-images.githubusercontent.com/70980498/171047509-5139dc37-cc2a-4bc9-932b-646c4e0d1645.png)
 
-4 - NAVIGATE TO `added moveable/modifiyable objects`
+4 - NAVIGATE TO COMMIT `added moveable/modifiyable objects`
 
 5 - PRESS ON HARD RESET and CONFIRM CHOICE
 ![image](https://user-images.githubusercontent.com/70980498/171046886-404e9ea9-9436-4422-934b-1247b21a5665.png)
