@@ -17,6 +17,7 @@ TO GET APPLICATION STARTED
  > yarn install   (faster install)
 
 4.5 - [NOT NECESSARY] RUN AUDIT (NOT PERFECT CODE MAYBE VULNERABILITIES. PROCEDE AT UR OWN RISK)
+ 
  NPM
   > npm audit fix --force
   
@@ -25,6 +26,7 @@ TO GET APPLICATION STARTED
   
 
 5 - RUN APPLICATION
+ 
  NPM
   > npm start
   
