@@ -13,20 +13,24 @@ TO GET APPLICATION STARTED
 
 4 - INSTALL NPM OR YARN
  > npm install    (slower install)
- ||
+ 
  > yarn install   (faster install)
 
 4.5 - [NOT NECESSARY] RUN AUDIT (NOT PERFECT CODE MAYBE VULNERABILITIES. PROCEDE AT UR OWN RISK)
  NPM
   > npm audit fix --force
+  
  YARN
   > yarn audit fix --force
+  
 
 5 - RUN APPLICATION
  NPM
   > npm start
+  
  YARN
   > yarn start
+  
 
 
 `OPEN PROJECT LIKE IN VIDEO`
